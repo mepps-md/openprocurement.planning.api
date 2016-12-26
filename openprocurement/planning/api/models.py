@@ -50,7 +50,7 @@ class PlanItem(Model):
     """Simple item model for planing"""
     id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     classification = ModelType(CPVClassification, required=True)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), min_size=1)
+    additionalClassifications = ListType(ModelType(Classification), default=list())
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
