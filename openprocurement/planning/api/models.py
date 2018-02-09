@@ -92,7 +92,7 @@ class PlanOrganization(Model):
 
 PROCEDURES = {
     '': ('',),
-    'open': ('belowThreshold', 'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco'),
+    'open': ('belowThreshold', 'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU'),
     'limited': ('reporting', 'negotiation', 'negotiation.quick'),
 }
 
@@ -161,7 +161,7 @@ class Plan(SchematicsDocument, Model):
     # budget:currency
     # budget:amount *
     # budget:amountNet
-    budget = ModelType(Budget, required=False)
+    budget = ModelType(Budget, required=True)
 
     # classification:scheme *
     # classification:id *
@@ -216,10 +216,6 @@ class Plan(SchematicsDocument, Model):
             raise ValidationError(u"CPV class of items should be identical")
         else:
             validate_cpv_group(items)
-
-    def validate_budget(self, data, budget):
-        if not budget and data['tender']['procurementMethodType'] != 'esco':
-            raise ValidationError(u"This field is required.")
 
     def import_data(self, raw_data, **kw):
         """

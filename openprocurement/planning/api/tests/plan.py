@@ -21,7 +21,6 @@ from openprocurement.planning.api.tests.plan_blanks import (
     get_plan,
     patch_plan,
     plan_not_found,
-    esco_plan,
 )
 
 test_plan_data_mode_test = test_plan_data.copy()
@@ -52,7 +51,6 @@ class PlanResourceTest(BaseWebTest):
     test_get_plan = snitch(get_plan)
     test_patch_plan = snitch(patch_plan)
     test_plan_not_found = snitch(plan_not_found)
-    test_esco_plan = snitch(esco_plan)
 
 def suite():
     suite = unittest.TestSuite()
