@@ -117,7 +117,7 @@ test_plan_data =  {
             },
             "amount": 10000,
             "amountNet": 12222,
-            "currency": u"UAH",
+            "currency": u"MDL",
             "id": u"12303111000-2",
             "description": u"budget_description"
         }

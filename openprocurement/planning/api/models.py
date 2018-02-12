@@ -36,7 +36,7 @@ class Budget(Model):
     description_en = StringType()
     description_ru = StringType()
     amount = FloatType(required=True)
-    currency = StringType(required=False, default=u'UAH', max_length=3,
+    currency = StringType(required=False, default=u'MDL', max_length=3,
                           min_length=3)  # The currency in 3-letter ISO 4217 format.
     amountNet = FloatType()
     project = ModelType(Project)
