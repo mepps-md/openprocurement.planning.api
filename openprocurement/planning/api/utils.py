@@ -25,13 +25,13 @@ LOGGER = getLogger(PKG.project_name)
 
 
 def generate_plan_id(ctime, db, server_id=''):
-    """ Generate ID for new plan in format "UA-P-YYYY-MM-DD-NNNNNN" + ["-server_id"]
+    """ Generate ID for new plan in format "MD-P-YYYY-MM-DD-NNNNNN" + ["-server_id"]
         YYYY - year, MM - month (start with 1), DD - day, NNNNNN - sequence number per 1 day
         and save plans count per day in database document with _id = "planID" as { key, value } = { "2015-12-03": 2 }
     :param ctime: system date-time
     :param db: couchdb database object
     :param server_id: server mark (for claster mode)
-    :return: planID in "UA-2015-05-08-000005"
+    :return: planID in "MD-2015-05-08-000005"
     """
     key = ctime.date().isoformat()  # key (YYYY-MM-DD)
     plan_id_doc = 'planID_' + server_id if server_id else 'planID'  # document _id
@@ -48,7 +48,7 @@ def generate_plan_id(ctime, db, server_id=''):
             sleep(1)
         else:
             break
-    return 'UA-P-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year, ctime.month, ctime.day, index,
+    return 'MD-P-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year, ctime.month, ctime.day, index,
                                                    server_id and '-' + server_id)
 
 
