@@ -414,14 +414,15 @@ def create_plan_invalid(self):
                   response.json['errors'])
 
     data = self.initial_data['tender']
-    self.initial_data['tender'] = {'procurementMethod': 'open', 'procurementMethodType': 'reporting', 'tenderPeriod' : data['tenderPeriod'] }
+    self.initial_data['tender'] = {'procurementMethod': 'open', 'procurementMethodType': 'negotiation', 'tenderPeriod' : data['tenderPeriod'] }
     response = self.app.post_json(request_path, {'data': self.initial_data}, status=422)
     self.initial_data['tender'] = data
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['status'], 'error')
-    self.assertIn({u'description': {u'procurementMethodType': [u"Value must be one of ('belowThreshold', 'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense')."]}, u'location': u'body', u'name': u'tender'},
-                 response.json['errors'])
+    self.assertIn({u'description': {u'procurementMethodType':
+        [u"Value must be one of ('belowThreshold', 'aboveThreshold', 'priceProposals')."]},
+         u'location': u'body', u'name': u'tender'}, response.json['errors'])
 
     data = self.initial_data['tender']
     self.initial_data['tender'] = {'procurementMethod': 'limited', 'procurementMethodType': 'belowThreshold', 'tenderPeriod' : data['tenderPeriod'] }
@@ -430,8 +431,20 @@ def create_plan_invalid(self):
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['status'], 'error')
-    self.assertIn({u'description': {u'procurementMethodType': [u"Value must be one of ('reporting', 'negotiation', 'negotiation.quick')."]}, u'location': u'body', u'name': u'tender'},
-                 response.json['errors'])
+    self.assertIn({u'description': {u'procurementMethodType':
+        [u"Value must be one of ('negotiation', 'negotiationNoPublication', 'priceProposalsNoPublication', 'socialConstruction')."]}, 
+         u'location': u'body', u'name': u'tender'}, response.json['errors'])
+
+    data = self.initial_data['tender']
+    self.initial_data['tender'] = {'procurementMethod': 'selective', 'procurementMethodType': 'belowThreshold', 'tenderPeriod' : data['tenderPeriod'] }
+    response = self.app.post_json(request_path, {'data': self.initial_data}, status=422)
+    self.initial_data['tender'] = data
+    self.assertEqual(response.status, '422 Unprocessable Entity')
+    self.assertEqual(response.content_type, 'application/json')
+    self.assertEqual(response.json['status'], 'error')
+    self.assertIn({u'description': {u'procurementMethodType':
+        [u"Value must be one of ('restricted', 'competitiveDialogue', 'solutionCompetition')."]},
+         u'location': u'body', u'name': u'tender'}, response.json['errors'])
 
     response = self.app.post_json(request_path,
                                   {'data': {'tender': {'tenderPeriod': {'startDate': 'invalid_value'}}}},
