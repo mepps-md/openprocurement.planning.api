@@ -71,7 +71,7 @@ class PlanOrganization(Model):
 
 PROCEDURES = {
     '': ('',),
-    'open': ('belowThreshold', 'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU'),
+    'open': ('belowThreshold', 'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense'),
     'limited': ('reporting', 'negotiation', 'negotiation.quick'),
 }
 
