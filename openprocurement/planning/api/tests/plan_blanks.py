@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.constants import ROUTE_PREFIX, CPV_ITEMS_CLASS_FROM
+from openprocurement.api.constants import ROUTE_PREFIX
 from openprocurement.api.utils import get_now
 
 from openprocurement.planning.api.models import Plan
@@ -454,55 +454,6 @@ def create_plan_invalid(self):
          u'name': u'tender'}
     ])
 
-    additionalClassifications = [i.pop("additionalClassifications") for i in self.initial_data["items"]]
-    if get_now() > CPV_ITEMS_CLASS_FROM:
-        cpv_code = self.initial_data['classification']['id']
-        cpv_codes = [i['classification']['id'] for i in self.initial_data["items"]]
-        self.initial_data['classification']['id'] = '99999999-9'
-        for index, cpv_code in enumerate(cpv_codes):
-            self.initial_data["items"][index]['classification']['id'] = '99999999-9'
-    response = self.app.post_json(request_path, {'data': self.initial_data}, status=422)
-    for index, additionalClassification in enumerate(additionalClassifications):
-        self.initial_data["items"][index]['additionalClassifications'] = additionalClassification
-    if get_now() > CPV_ITEMS_CLASS_FROM:
-        self.initial_data['classification']['id'] = cpv_code
-        for index, cpv_code in enumerate(cpv_codes):
-            self.initial_data["items"][index]['classification']['id'] = cpv_code
-    self.assertEqual(response.status, '422 Unprocessable Entity')
-    self.assertEqual(response.content_type, 'application/json')
-    self.assertEqual(response.json['status'], 'error')
-    self.assertEqual(response.json['errors'], [
-        {u'description': [{u'additionalClassifications': [u'This field is required.']}, {u'additionalClassifications': [u'This field is required.']}, {u'additionalClassifications': [u'This field is required.']}], u'location': u'body', u'name': u'items'}
-    ])
-
-    additionalClassifications = [i["additionalClassifications"][0]["scheme"] for i in self.initial_data["items"]]
-    for index, _ in enumerate(additionalClassifications):
-        self.initial_data["items"][index]["additionalClassifications"][0]["scheme"] = u'Не ДКПП'
-    if get_now() > CPV_ITEMS_CLASS_FROM:
-        cpv_code = self.initial_data['classification']['id']
-        cpv_codes = [i['classification']['id'] for i in self.initial_data["items"]]
-        self.initial_data['classification']['id'] = '99999999-9'
-        for index, cpv_code in enumerate(cpv_codes):
-            self.initial_data["items"][index]['classification']['id'] = '99999999-9'
-    response = self.app.post_json(request_path, {'data': self.initial_data}, status=422)
-    for index, data in enumerate(additionalClassifications):
-        self.initial_data["items"][index]["additionalClassifications"][0]["scheme"] = data
-    if get_now() > CPV_ITEMS_CLASS_FROM:
-        self.initial_data['classification']['id'] = cpv_code
-        for index, cpv_code in enumerate(cpv_codes):
-            self.initial_data["items"][index]['classification']['id'] = cpv_code
-    self.assertEqual(response.status, '422 Unprocessable Entity')
-    self.assertEqual(response.content_type, 'application/json')
-    self.assertEqual(response.json['status'], 'error')
-    if get_now() > CPV_ITEMS_CLASS_FROM:
-        self.assertEqual(response.json['errors'], [
-            {u'description': [{u'additionalClassifications': [u"One of additional classifications should be one of [ДК003, ДК015, ДК018, specialNorms]."]} for _ in additionalClassifications], u'location': u'body', u'name': u'items'}
-        ])
-    else:
-        self.assertEqual(response.json['errors'], [
-            {u'description': [{u'additionalClassifications': [u"One of additional classifications should be one of [ДКПП, NONE, ДК003, ДК015, ДК018]."]} for _ in additionalClassifications], u'location': u'body', u'name': u'items'}
-        ])
-
     data = self.initial_data["procuringEntity"]["name"]
     del self.initial_data["procuringEntity"]["name"]
     response = self.app.post_json(request_path, {'data': self.initial_data}, status=422)
@@ -524,45 +475,10 @@ def create_plan_invalid(self):
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['status'], 'error')
-    if get_now() > CPV_ITEMS_CLASS_FROM:
-        self.assertEqual(response.json['errors'], [
-            {u'description': [{u'classification': [u'CPV class of items should be identical to root cpv']}],
-            u'location': u'body', u'name': u'items'}
-        ])
-    else:
-        self.assertEqual(response.json['errors'], [
-            {u'description': [{u'classification': [u'CPV group of items be identical to root cpv']}],
-            u'location': u'body', u'name': u'items'}
-        ])
-
-    classification_id = self.initial_data["classification"]["id"]
-    self.initial_data["classification"]["id"] = u'33600000-6'
-    response = self.app.post_json(request_path, {'data': self.initial_data}, status=422)
-    self.initial_data["classification"]["id"] = classification_id
-    self.assertEqual(response.status, '422 Unprocessable Entity')
-    self.assertEqual(response.content_type, 'application/json')
-    self.assertEqual(response.json['status'], 'error')
     self.assertEqual(response.json['errors'], [
         {u'description': [{u'classification': [u'CPV group of items be identical to root cpv']}],
-        u'location': u'body', u'name': u'items'}
+         u'location': u'body', u'name': u'items'}
     ])
-
-    classification_id = self.initial_data["classification"]["id"]
-    self.initial_data["classification"]["id"] = u'33600000-6'
-    item = self.initial_data["items"][0].copy()
-    data = self.initial_data["items"][0].copy()
-    classification = data['classification'].copy()
-    classification["id"] = u'33610000-9'
-    data['classification'] = classification
-    data2 = self.initial_data["items"][0].copy()
-    classification = data2['classification'].copy()
-    classification["id"] = u'33620000-2'
-    data2['classification'] = classification
-    self.initial_data["items"] = [data, data2]
-    response = self.app.post_json(request_path, {'data': self.initial_data})
-    self.initial_data["classification"]["id"] = classification_id
-    self.initial_data["items"] = [item]
-    self.assertEqual(response.status, '201 Created')
 
 def create_plan_generated(self):
     data = self.initial_data.copy()
