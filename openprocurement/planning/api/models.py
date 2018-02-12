@@ -42,6 +42,8 @@ class Budget(Model):
     project = ModelType(Project)
     year = IntType(min_value=2000)
     notes = StringType()
+    notes_en = StringType()
+    notes_ru = StringType()
 
 
 class PlanItem(Model):
